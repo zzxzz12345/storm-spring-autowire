@@ -58,3 +58,13 @@ public class TestAutoBuild {
 这样就能通过一种可读性非常强的的方式构建出一个拓扑
 此外由于在构建过程中自动使用了代理，你可以用@Resource和@Autowired这两个注解进行注入
 目前会自动从classpath下的applicationContext.xml中进行读取
+
+此外 对于CustomGrouping的自定义分组策略 你可以通过实现GroupingStrategy接口的形式添加新的注解
+具体实现可以参考org/im/storm/annotation/strategy/impl包下的实现
+实现后可以通过
+```Java
+AutoBuild autoBuild = new AutoBuild(builder);
+autoBuild.registryStrategy(strategy);
+autoBuild.build();
+```
+的方式注册进去
