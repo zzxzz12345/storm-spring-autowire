@@ -36,6 +36,7 @@ public class BeanUtil {
 
   /**
    * 扫描obj下的@Resource注解和@Autowired注解进行注入
+   *
    * @param obj
    */
   public static void autoware(Object obj) {
@@ -50,7 +51,7 @@ public class BeanUtil {
         } else if (context.containsBean(field.getName())) {
           bean = context.getBean(field.getName());
         } else {
-          bean = context.getBean(field.getClass());
+          bean = context.getBean(field.getType());
         }
         field.setAccessible(true);
         try {
@@ -67,7 +68,7 @@ public class BeanUtil {
         if (qualifier != null && qualifier.value() != null && !qualifier.value().equals("")) {
           bean = context.getBean(qualifier.value());
         } else {
-          bean = context.getBean(field.getClass());
+          bean = context.getBean(field.getType());
         }
         try {
           field.set(obj, bean);

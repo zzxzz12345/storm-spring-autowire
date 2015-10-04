@@ -6,9 +6,9 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
-import org.im.storm.annotation.Bolt;
-import org.im.storm.annotation.FromSpout;
-import org.im.storm.bean.BaseBean;
+import org.im.storm.annotation.base.Bolt;
+import org.im.storm.annotation.grouping.ShuffleGrouping;
+import org.im.storm.counter.WordCounter;
 import org.im.storm.model.bolt.BaseRichBolt;
 import org.springframework.context.ApplicationContext;
 
@@ -18,13 +18,12 @@ import java.util.Map;
 /**
  * Created by ImKAIne on 2015/9/19.
  */
-@Bolt(bolt = "counter")
-@FromSpout(spout = "test")
-public class CounterBolt extends BaseRichBolt {
+@Bolt("wordCounter")
+@ShuffleGrouping("spout")
+public class WordCounterBolt extends BaseRichBolt {
   private OutputCollector collector;
-  private int count;
   @Resource
-  private BaseBean baseBean;
+  private WordCounter wordCounter;
 
   @Override
   public void prepare(Map stormConf, TopologyContext context, OutputCollector collector, ApplicationContext ctx) {
@@ -32,13 +31,13 @@ public class CounterBolt extends BaseRichBolt {
   }
 
   public void execute(Tuple tuple) {
-    System.out.println(baseBean.getName());
-    System.out.println(tuple.getStringByField("message"));
-    count++;
-    collector.emit(new Values(count));
+    String message = tuple.getStringByField("message");
+    System.out.println("word:" + message);
+    int length = wordCounter.count(message);
+    collector.emit("word", new Values(length));
   }
 
   public void declareOutputFields(OutputFieldsDeclarer declarer) {
-    declarer.declare(new Fields("count"));
+    declarer.declareStream("word", new Fields("count"));
   }
 }

@@ -1,10 +1,11 @@
-package org.im.storm.model.bolt;
+package org.im.storm.model.proxy.impl;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Tuple;
+import org.im.storm.model.proxy.Proxy;
 import org.im.storm.utils.BeanUtil;
 
 import java.util.Map;
@@ -13,8 +14,8 @@ import java.util.Map;
  * IRichBolt的代理类，用于实现在调用prepare方法时的延时注入
  * Created by HuChong on 2015/10/3.
  */
-public class ProxyBolt implements IRichBolt {
-  private IRichBolt bolt;
+public class ProxyBolt implements IRichBolt,Proxy {
+  private final IRichBolt bolt;
   private boolean isAutowired;
 
   public ProxyBolt(IRichBolt bolt) {
@@ -47,5 +48,9 @@ public class ProxyBolt implements IRichBolt {
 
   public Map<String, Object> getComponentConfiguration() {
     return bolt.getComponentConfiguration();
+  }
+
+  public Object getInner() {
+    return bolt;
   }
 }

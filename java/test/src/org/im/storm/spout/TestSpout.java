@@ -6,7 +6,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
-import org.im.storm.annotation.Spout;
+import org.im.storm.annotation.base.Spout;
 import org.im.storm.model.spout.BaseRichSpout;
 import org.springframework.context.ApplicationContext;
 
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by ImKAIne on 2015/9/19.
  */
-@Spout(spout = "test")
+@Spout("spout")
 public class TestSpout extends BaseRichSpout {
   private SpoutOutputCollector collector;
 
@@ -29,7 +29,7 @@ public class TestSpout extends BaseRichSpout {
   }
 
   public void nextTuple() {
-    collector.emit(new Values("123"));
+    collector.emit(new Values("this sentence contains 5 words"));
     Utils.sleep(1000);
   }
 }

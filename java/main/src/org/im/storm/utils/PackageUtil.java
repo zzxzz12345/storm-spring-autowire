@@ -1,18 +1,4 @@
-package org.im.storm.main;
-
-import backtype.storm.Config;
-import backtype.storm.LocalCluster;
-import backtype.storm.topology.BoltDeclarer;
-import backtype.storm.topology.TopologyBuilder;
-import backtype.storm.topology.base.BaseRichBolt;
-import backtype.storm.topology.base.BaseRichSpout;
-import org.im.storm.bolt.AggregatorBolt;
-import org.im.storm.bolt.CounterBolt;
-import org.im.storm.spout.TestSpout;
-import org.im.storm.annotation.Bolt;
-import org.im.storm.annotation.FromBolt;
-import org.im.storm.annotation.FromSpout;
-import org.im.storm.annotation.Spout;
+package org.im.storm.utils;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -27,55 +13,11 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * Created by ImKAIne on 2015/9/19.
+ * Created by HuChong on 2015/10/3.
  */
-public class AutoBuild {
-
-  public static void main(String[] args) throws InstantiationException, IllegalAccessException {
-    build();
-  }
-
-  public static void build() throws IllegalAccessException, InstantiationException {
-    TopologyBuilder builder = new TopologyBuilder();
-    Set<Class<?>> classes = getClasses("org.im");
-    for (Class<?> aClass : classes) {
-      Bolt bolt = aClass.getAnnotation(Bolt.class);
-      if (bolt != null) {
-        FromBolt fromBolt = aClass.getAnnotation(FromBolt.class);
-        BoltDeclarer declarer = builder.setBolt(bolt.bolt(), (BaseRichBolt) aClass.newInstance());
-        if (fromBolt != null) {
-          declarer.allGrouping(fromBolt.bolt());
-        }
-        FromSpout fromSpout = aClass.getAnnotation(FromSpout.class);
-        if (fromSpout != null) {
-          declarer.allGrouping(fromSpout.spout());
-        }
-      }
-      Spout spout = aClass.getAnnotation(Spout.class);
-      if (spout != null) {
-        builder.setSpout(spout.spout(), (BaseRichSpout) aClass.newInstance());
-      }
-    }
-    LocalCluster cluster = new LocalCluster();
-    Config config = new Config();
-    cluster.submitTopology("test", config, builder.createTopology());
-  }
-
-  public static void startTopology() {
-    TopologyBuilder builder = new TopologyBuilder();
-    TestSpout spout = new TestSpout();
-    CounterBolt counterBolt = new CounterBolt();
-    AggregatorBolt aggregatorBolt = new AggregatorBolt();
-    builder.setSpout("spout", spout);
-    builder.setBolt("counter", counterBolt).allGrouping("spout");
-    builder.setBolt("aggregator", aggregatorBolt).allGrouping("counter");
-    LocalCluster cluster = new LocalCluster();
-    Config config = new Config();
-    cluster.submitTopology("test", config, builder.createTopology());
-  }
-
+public class PackageUtil {
   /**
-   * 浠庡寘package涓幏鍙栨墍鏈夌殑Class
+   * 从包package中获取所有的Class
    *
    * @param pack
    * @return
@@ -144,7 +86,7 @@ public class AutoBuild {
   }
 
   /**
-   * 浠ユ枃浠剁殑褰㈠紡鏉ヨ幏鍙栧寘涓嬬殑鎵�鏈塁lass
+   * 以文件的形式来获取包下的所有Class
    *
    * @param packageName
    * @param packagePath

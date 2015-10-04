@@ -1,9 +1,10 @@
-package org.im.storm.model.spout;
+package org.im.storm.model.proxy.impl;
 
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import org.im.storm.model.proxy.Proxy;
 import org.im.storm.utils.BeanUtil;
 import org.springframework.context.annotation.Bean;
 
@@ -12,8 +13,8 @@ import java.util.Map;
 /**
  * Created by HuChong on 2015/10/3.
  */
-public class ProxySpout implements IRichSpout {
-  private IRichSpout spout;
+public class ProxySpout implements IRichSpout,Proxy {
+  private final IRichSpout spout;
   private boolean isAutowired;
 
   public ProxySpout(IRichSpout spout) {
@@ -62,5 +63,9 @@ public class ProxySpout implements IRichSpout {
 
   public void fail(Object msgId) {
     spout.fail(msgId);
+  }
+
+  public Object getInner() {
+    return spout;
   }
 }
